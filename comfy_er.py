@@ -1671,8 +1671,11 @@ def render_workflow(data):
         for warning in data["warnings"]:
             say("  - {}".format(warning))
         say("")
-    if plan["clone_commands"] or plan["pip_commands"] or plan["manual_nodes"]:
-        say("确认无误后可执行：python comfy_er.py workflow \"{}\" --apply".format(data["path"]))
+    if plan["clone_commands"] or plan["pip_commands"]:
+        if data["comfy"].get("python_fallback"):
+            say("当前没有 ComfyUI 专属 Python，--apply 会被拒绝；请先用 --comfy 指向完整安装目录。")
+        else:
+            say("确认无误后可执行：python comfy_er.py workflow \"{}\" --apply".format(data["path"]))
     say("本次运行未修改任何环境；--apply 是唯一写入路径，且会先保存 pip freeze 快照。")
     if data["missing_models"]:
         say("本工具永远不会自动下载模型。")

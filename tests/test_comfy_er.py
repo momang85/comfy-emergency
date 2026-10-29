@@ -1,8 +1,10 @@
+import io
 import json
 import os
 import subprocess
 import sys
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -230,14 +232,18 @@ class ApplyTests(unittest.TestCase):
             "fix_plan": {"clone_commands": ["git clone https://example.invalid/x"], "pip_commands": []},
             "comfy": {"path": "D:\\ComfyUI", "python": sys.executable, "python_fallback": True},
         }
-        result = comfy_er.apply_plan(data)
+        result = None
+        with redirect_stdout(io.StringIO()):
+            result = comfy_er.apply_plan(data)
         self.assertFalse(result["ok"])
         self.assertIn("ComfyUI 专属 Python", result["reason"])
 
 
 class SelfTestTests(unittest.TestCase):
     def test_self_test_exits_zero_without_network(self):
-        self.assertEqual(comfy_er.run_self_test(), 0)
+        with redirect_stdout(io.StringIO()):
+            code = comfy_er.run_self_test()
+        self.assertEqual(code, 0)
 
 
 if __name__ == "__main__":
