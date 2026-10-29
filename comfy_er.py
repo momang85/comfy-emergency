@@ -1955,9 +1955,13 @@ def apply_plan(data):
         say("  完成")
     # Re-check pinned versions against the freshly cloned requirements before pip.
     for command in plan.get("pip_commands", []):
-        say("[执行] {}".format(command))
         req_match = re.search(r'-r\s+"([^"]+)"', command)
-        if req_match and Path(req_match.group(1)).is_file():
+        if req_match and not Path(req_match.group(1)).is_file():
+            say("[跳过] {}".format(command))
+            say("  未找到 requirements.txt，跳过依赖安装；请按该节点 README 手动检查。")
+            continue
+        say("[执行] {}".format(command))
+        if req_match:
             records = _requirement_records(req_match.group(1))
             merged = dict(baseline["packages"])
             pins = {}
