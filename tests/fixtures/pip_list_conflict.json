@@ -1,0 +1,10 @@
+[
+  {"name": "comfyui-frontend-package", "version": "1.24.4"},
+  {"name": "numpy", "version": "2.1.0"},
+  {"name": "pydantic", "version": "2.9.2"},
+  {"name": "torch", "version": "2.1.0"},
+  {"name": "torchaudio", "version": "2.1.0"},
+  {"name": "torchvision", "version": "0.16.0"},
+  {"name": "transformers", "version": "4.49.0"},
+  {"name": "xformers", "version": "0.0.22"}
+]

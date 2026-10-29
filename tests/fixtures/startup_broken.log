@@ -1,0 +1,31 @@
+﻿Starting ComfyUI...
+Total VRAM 12282 MB, total RAM 32604 MB
+pytorch version: 2.1.0+cu121
+[Custom Nodes] Loading 3 custom nodes...
+Traceback (most recent call last):
+  File "D:\秋叶整合包\ComfyUI\custom_nodes\ComfyUI-Impact-Pack\__init__.py", line 18, in <module>
+    from impact import core
+  File "D:\秋叶整合包\ComfyUI\custom_nodes\ComfyUI-Impact-Pack\impact\core.py", line 7, in <module>
+    import numpy.core.multiarray
+ModuleNotFoundError: No module named 'impact'
+IMPORT FAILED: ComfyUI-Impact-Pack
+Cannot import D:\秋叶整合包\ComfyUI\custom_nodes\ComfyUI-Impact-Pack module for custom nodes: No module named 'impact'
+Traceback (most recent call last):
+  File "D:\秋叶整合包\ComfyUI\custom_nodes\ComfyUI-WD14-Tagger\wd14_tagger.py", line 12, in <module>
+    import onnxruntime
+ModuleNotFoundError: No module named 'onnxruntime'
+IMPORT FAILED: ComfyUI-WD14-Tagger
+Traceback (most recent call last):
+  File "D:\秋叶整合包\ComfyUI\main.py", line 42, in <module>
+    import torch
+  File "D:\秋叶整合包\python_embeded\Lib\site-packages\torch\__init__.py", line 132, in <module>
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.1.0 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+numpy.core.multiarray failed to import
+Startup failed: cannot continue without torch
+Press any key to continue . . .

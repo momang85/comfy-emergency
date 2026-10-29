@@ -1,0 +1,54 @@
+{
+  "prompt": {
+    "3": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {"ckpt_name": "国风大模型_v3.safetensors"},
+      "_meta": {"title": "装载国风大模型"}
+    },
+    "5": {
+      "class_type": "ImpactWildcardProcessor",
+      "inputs": {
+        "wildcard_text": "国风少女, 江南雨巷, 水墨",
+        "populated_text": "国风少女, 江南雨巷, 水墨",
+        "mode": true,
+        "seed": 42
+      },
+      "_meta": {"title": "通配符处理器"}
+    },
+    "8": {
+      "class_type": "LoraLoader",
+      "inputs": {
+        "model": ["3", 0],
+        "clip": ["3", 1],
+        "lora_name": "水墨风格_细节增强.safetensors",
+        "strength_model": 0.75,
+        "strength_clip": 0.65
+      },
+      "_meta": {"title": "加载水墨 LoRA"}
+    },
+    "9": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": ["8", 0],
+        "positive": ["6", 0],
+        "negative": ["7", 0],
+        "latent_image": ["12", 0],
+        "seed": 20261029,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "euler_ancestral",
+        "scheduler": "normal",
+        "denoise": 0.85
+      },
+      "_meta": {"title": "采样"}
+    },
+    "10": {
+      "class_type": "VAEDecode",
+      "inputs": {"samples": ["9", 0], "vae": ["3", 2]}
+    },
+    "11": {
+      "class_type": "SaveImage",
+      "inputs": {"images": ["10", 0], "filename_prefix": "国风/雨巷少女"}
+    }
+  }
+}

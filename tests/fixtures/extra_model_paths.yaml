@@ -1,0 +1,14 @@
+# 秋叶整合包常见的额外模型路径配置
+aki:
+  base_path: D:\秋叶整合包\ComfyUI
+  checkpoints: |
+    models/checkpoints
+    D:\模型仓库\大模型
+  loras:
+    - models/loras
+    - D:\模型仓库\LoRA
+  vae: models/vae
+
+shared:
+  base_path: E:\AI\shared-models
+  checkpoints: checkpoints
