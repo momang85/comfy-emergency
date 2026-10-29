@@ -1,3 +1,4 @@
+# ubuntu-22.04 而不是 -latest：ubuntu-26.04 镜像上 setup-python 没有 3.9 的构建
 name: test
 
 on:
@@ -11,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.12"]
+        os: [ubuntu-22.04, windows-latest]
+        python-version: ["3.9", "3.12", "3.13"]
 
     steps:
       - name: Checkout
