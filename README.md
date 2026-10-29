@@ -2,16 +2,16 @@
 
 **ComfyUI 急诊室：只诊断、不乱装。ComfyUI 打不开的时候，它是唯一还能用的那个工具。**
 
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
-[![Tests](https://img.shields.io/badge/tests-20%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-22%20passing-brightgreen.svg)](tests/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 > 下载来的工作流一片红框？装了一晚上还是打不开？问 AI 越问越乱，最后只能删掉整个 Python 包？
 
 **它只做一件事**：把你这台机器上到底缺什么、冲突在哪、日志在骂什么，翻译成一段看得懂的中文，并给出现成的修复命令。
 
-单文件 2150 行 · **0 个第三方依赖** · 7 条依赖冲突规则 · 14 类日志模式 · 158 个内置节点名 · 默认只读。
+单文件 2152 行 · **0 个第三方依赖** · 7 条依赖冲突规则 · 14 类日志模式 · 158 个内置节点名 · 默认只读。
 
 ---
 
@@ -49,39 +49,58 @@ comfy-emergency 是独立进程，用你系统的 Python 跑：
 
 ```bash
 python comfy_er.py doctor                         # 体检：ComfyUI 在哪、环境有什么毛病
-python comfy_er.py workflow 工作流.json            # 这个工作流缺什么节点、缺什么模型
+python comfy_er.py doctor --json                 # 机器可读 JSON（UTF-8）
+python comfy_er.py workflow 工作流.json           # 这个工作流缺什么节点、缺什么模型
+python comfy_er.py workflow 工作流.json --offline # 禁止联网，节点归属未知也不报错
+python comfy_er.py workflow 工作流.json --json    # 机器可读结果
 python comfy_er.py log comfyui.log                # 打不开？把日志丢给它
 python comfy_er.py report --comfy D:\ComfyUI      # 生成可贴群的 Markdown 报告
 python comfy_er.py --self-test                    # 离线自检，不联网、不改环境
 ```
 
+Python 3.8+。Windows 优先，Linux/macOS 也可用。纯标准库，无需 `pip install`。
+
 ---
 
 ## 它长什么样（真实输出）
 
-```
-> python comfy_er.py workflow 国风工作流.json --comfy D:\ComfyUI
+下面是测试 fixture 的离线真实输出（示例数据；本机没有安装 ComfyUI）：
 
+```
+> python comfy_er.py workflow tests\fixtures\workflow_ui.json --offline
+
+ComfyUI 急诊医生 v0.1.0 · 工作流检查
+================================================================
+[工作流] tests\fixtures\workflow_ui.json
 [格式] UI（含 1 个子图）
+[ComfyUI] 未找到（仍可检查节点名和模型名；用 --comfy 指定根目录）
+[节点归属] 未联网（离线模式）
 [节点统计] 共 10 种；内置 9 种；待确认自定义 1 种
-[模型库存] 已读取 models/，共 1 个文件
+[模型库存] 未找到 models/，缺失模型均按未安装展示
 
 缺失节点（1 个）
   1. ImpactWildcardProcessor
-     所属仓库：ComfyUI Impact Pack (https://github.com/ltdrdata/ComfyUI-Impact-Pack)
-     是否已装但导入失败：否（仓库未安装）
+     所属仓库：未知（未联网，节点归属未知）
+     是否已装但导入失败：无法判定
+     说明：未联网，节点归属未知。请联网刷新节点表，或按类名搜索对应扩展。
 
 缺失模型（3 个）
   文件名 | 期望子目录 | 处理
   国风大模型_v3.safetensors | models/checkpoints | 请自行下载（不提供模型文件）
   水墨风格_细节增强.safetensors | models/loras | 请自行下载（不提供模型文件）
   国风_vae.safetensors | models/vae | 请自行下载（不提供模型文件）
+  说明：模型只按文件名在 models/ 下比对；存在同名文件但也可能放错子目录。
 
 修复计划（只读预演，尚未执行）
-  节点安装命令：
-    1. git clone "https://github.com/ltdrdata/ComfyUI-Impact-Pack" "D:\ComfyUI\custom_nodes\ComfyUI-Impact-Pack"
-  依赖安装命令：
-    2. <ComfyUI 的 python> -m pip install -r "D:\ComfyUI\custom_nodes\ComfyUI-Impact-Pack\requirements.txt"
+  没有可自动执行的节点安装项。
+  - 未找到 ComfyUI，无法生成安装目录；请先加 --comfy 指定。
+  - 模型缺失只给出文件名与相对目录，不自动下载。
+  模型：请自行下载（不提供模型文件），放到上面的期望子目录。
+
+提示：
+  - 未联网，节点归属未知。
+  - 没有找到 ComfyUI，模型库存与启动日志无法检查；可用 --comfy 指定根目录。
+  - 离线模式：未发起任何网络请求。
 
 本次运行未修改任何环境；--apply 是唯一写入路径，且会先保存 pip freeze 快照。
 本工具永远不会自动下载模型。
@@ -113,11 +132,11 @@ python comfy_er.py --self-test                    # 离线自检，不联网、�
 | 检查项 | 说明 |
 |---|---|
 | 缺失节点 | UI / API 两种工作流格式，含**子图**展开；class 名反查所属仓库 |
-| 缺失模型 | 比对 `models/` 各子目录，大小写不敏感；同名不同目录会提示「可能放错子目录」 |
+| 缺失模型 | 按文件名 / 相对路径比对 `models/`，大小写不敏感；同名文件放错子目录可能误判 |
 | 装错但导入失败 | 日志里能对上号的节点，直接指出「已安装但 import 失败」 |
 | 依赖冲突 | 7 条规则：NumPy 2 + 旧 torch、xformers / torch 版本错配、pydantic v1/v2 等 |
 | 启动日志 | 14 类模式，traceback 翻译成中文 + 修复命令 + 可信度 |
-| 额外模型路径 | 解析 `extra_model_paths.yaml`，秋叶包把模型放别处也能找到 |
+| 额外模型路径 | 解析 `extra_model_paths.yaml` 并展示 base_path；不扫描其中文件 |
 
 **诚实边界**：工作流逻辑坏了、模型下错了、显存不够，它只告诉你是哪一类，不假装能修。
 
@@ -125,12 +144,23 @@ python comfy_er.py --self-test                    # 离线自检，不联网、�
 
 ## 安全承诺
 
-1. **默认只读**。不加 `--apply`，一个字节都不写进你的环境。
+1. **默认只读**。不加 `--apply`，不写 ComfyUI 目录，也不改 Python 环境；节点表缓存只写 `~/.comfy-er`。
 2. **动手前拍照**。`--apply` 先执行 `pip freeze` 存快照到 `~/.comfy-er/snapshots/`，失败时回滚就一行命令。
 3. **规则不通过不许装**。`--apply` 前若已命中 `error` 级冲突，直接拒绝。
 4. **不碰模型、不碰工作流**。只读；模型永远不下载。
 5. **纯标准库**。这正是它能在废墟里跑起来的原因。
 6. **不联网也能用**。`--offline` 完全离线，只是节点归属会退化成「未知」。
+
+## 联网与缓存
+
+工具自身唯一的网络请求是 ComfyUI-Manager 的公共节点归属表：
+`https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json`。
+结果缓存 7 天在 `%USERPROFILE%\.comfy-er\node-map.json`（Linux/macOS 为
+`~/.comfy-er/node-map.json`）。`--offline` 优先读本地
+`custom_nodes/ComfyUI-Manager/extension-node-map.json`，再读缓存，不联网；
+`--refresh-map` 强制刷新。网络失败只降级为「未联网，节点归属未知」。
+
+`--apply` 里的 `git clone` / `pip install` 会联网，但只有显式传 `--apply` 才执行。
 
 ---
 
@@ -146,7 +176,7 @@ python comfy_er.py --self-test                    # 离线自检，不联网、�
 能用。`一键运行.bat` 会自动找 `python_embeded\python.exe`；也可以手动 `--comfy` 指向整合包的 ComfyUI 目录。
 
 **Q：和 ComfyUI-Manager 冲不冲突？**
-不冲突。它优先读 Manager 已经生成好的 `extension-node-map.json`，只读不写。
+不冲突。它优先读 Manager 已经生成好的 `extension-node-map.json`，没有就联网取公共表并缓存；`--offline` 可完全离线。
 
 **Q：为什么不做模型自动下载？**
 版权、带宽、断点续传、镜像失效，全是坑，写错一次路径就是灾难。只给文件名和目标目录。
@@ -171,8 +201,8 @@ boot — the exact case where in-process tools like ComfyUI-Manager cannot help 
 It parses workflows (UI + API format, subgraphs included), maps node classes to the
 custom-node repos that own them, checks model filenames across `models/*`, flags known
 pip dependency conflicts, and translates startup tracebacks into plain Chinese with a fix
-command. Nothing is written unless you pass `--apply`, and `--apply` snapshots
-`pip freeze` first. Models are never downloaded.
+command. No ComfyUI files or Python packages are changed unless you pass `--apply`, and
+`--apply` snapshots `pip freeze` first. Models are never downloaded.
 
 ```bash
 python comfy_er.py --self-test

@@ -1897,6 +1897,10 @@ def apply_plan(data):
     if not data["comfy"].get("python"):
         say("无法执行 --apply：没有找到可用的 Python。")
         return {"ok": False, "reason": "没有找到 Python", "commands": []}
+    if data["comfy"].get("python_fallback"):
+        say("无法执行 --apply：没有找到 ComfyUI 专属 Python，当前只能回退到系统 Python。")
+        say("请用 --comfy 指向完整安装目录（含 python_embeded 或 .venv）后再试。")
+        return {"ok": False, "reason": "没有 ComfyUI 专属 Python", "commands": []}
     commands = list(plan.get("clone_commands", [])) + list(plan.get("pip_commands", []))
     if not commands:
         say("修复计划里没有可自动执行的节点安装项；模型不会被自动下载。")
